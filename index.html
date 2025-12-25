@@ -141,13 +141,25 @@
         <div class="space-y-4 text-left">
           <div>
             <label
-              class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-2"
+              class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 px-2"
               >Manager Namn</label
             >
             <input
               type="text"
               id="manager-name-input"
               placeholder="Ditt namn..."
+              class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-5 py-4 text-white text-center focus:outline-none focus:border-sky-500 transition-all font-bold text-lg"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 px-2"
+              >Biografens Namn</label
+            >
+            <input
+              type="text"
+              id="cinema-name-input"
+              placeholder="T.ex. Palladium eller Royal..."
               class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-5 py-4 text-white text-center focus:outline-none focus:border-sky-500 transition-all font-bold text-lg"
             />
           </div>
@@ -160,9 +172,9 @@
           </button>
         </div>
         <p
-          class="text-[9px] text-slate-600 mt-10 font-bold uppercase italic tracking-widest text-center text-center"
+          class="text-[9px] text-slate-600 mt-10 font-bold uppercase italic tracking-widest text-center"
         >
-          v4.1 - Smart Planning Update
+          v4.2 - Custom Branding Update
         </p>
       </div>
     </div>
@@ -175,9 +187,10 @@
         <div class="flex items-center space-x-6">
           <div class="flex flex-col text-left">
             <h1
+              id="display-cinema-name"
               class="text-xl font-black tracking-tighter text-sky-400 uppercase italic leading-none"
             >
-              Bio<span class="text-white">Pro</span>
+              BioPro
             </h1>
             <span
               id="display-manager-name"
@@ -543,7 +556,7 @@
                   <button
                     id="btn-buy-stock"
                     onclick="buyStock()"
-                    class="w-full py-3 rounded-xl font-black text-[10px] uppercase transition-all shadow-lg"
+                    class="w-full py-3 rounded-xl font-black text-[10px] uppercase bg-slate-700 hover:bg-sky-600 transition-all shadow-lg"
                   >
                     Beställ 400st (2 000kr)
                   </button>
@@ -705,6 +718,7 @@
 
       const gameState = {
         managerName: "",
+        cinemaName: "BioPro", // Default branding
         money: 5000,
         stock: 400,
         pendingStock: 0,
@@ -826,12 +840,17 @@
       }
 
       function startGame() {
-        const input = document.getElementById("manager-name-input");
-        if (input.value.trim() === "") {
-          input.focus();
+        const mInput = document.getElementById("manager-name-input");
+        const cInput = document.getElementById("cinema-name-input");
+
+        if (mInput.value.trim() === "") {
+          mInput.focus();
           return;
         }
-        gameState.managerName = input.value.trim();
+
+        gameState.managerName = mInput.value.trim();
+        gameState.cinemaName = cInput.value.trim() || "BioPro";
+
         document.getElementById("splash-screen").style.opacity = "0";
         setTimeout(() => {
           document.getElementById("splash-screen").style.visibility = "hidden";
@@ -942,6 +961,7 @@
 
       // --- UI REFRESH ---
       function updateUI() {
+        safeSetText("display-cinema-name", gameState.cinemaName);
         safeSetText("display-manager-name", `Chef: ${gameState.managerName}`);
         safeSetText("stat-money", formatMoney(gameState.money));
         safeSetText(
@@ -1019,11 +1039,13 @@
                 <div class="flex justify-between items-center bg-slate-800/30 p-3 rounded-xl border ${
                   m ? "border-sky-500/40" : "border-slate-800"
                 } mb-1 text-[10px]">
-                    <div class="text-left"><span class="text-[7px] font-black opacity-50 uppercase text-left">${
+                    <div class="text-left"><span class="text-[7px] font-black opacity-50 uppercase text-left text-left">${
                       planDayInfo.times[i]
                     } ${s}</span><p class="${
                 m ? "text-white font-bold" : "text-slate-600 italic"
-              } uppercase text-left">${m ? m.title : "Vakant"}</p></div>
+              } uppercase text-left text-left text-left">${
+                m ? m.title : "Vakant"
+              }</p></div>
                     ${
                       m && !gameState.weekPlanned
                         ? `<button onclick="removeFromSlot(${i})" class="text-red-500 font-black px-2 hover:bg-red-500/10 rounded-lg">✕</button>`
@@ -1037,11 +1059,11 @@
           gameState.inventory
             .map(
               (m) => `
-                <div class="p-2 bg-slate-800 rounded-xl border border-slate-700 flex gap-3 items-center hover:border-sky-500/50 transition-colors text-left shadow-lg">
+                <div class="p-2 bg-slate-800 rounded-xl border border-slate-700 flex gap-3 items-center hover:border-sky-500/50 transition-colors text-left shadow-lg text-left">
                     <img src="${
                       m.poster
                     }" class="w-8 h-12 rounded shadow-lg object-cover">
-                    <div class="flex-1"><p class="font-black text-[10px] uppercase leading-tight text-left text-left">${
+                    <div class="flex-1"><p class="font-black text-[10px] uppercase leading-tight text-left text-left text-left">${
                       m.title
                     }</p></div>
                     ${
@@ -1057,15 +1079,15 @@
         document.getElementById("staff-list").innerHTML = gameState.staff
           .map(
             (s) => `
-                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700 text-left mb-2 shadow-inner">
-                    <div class="flex justify-between items-start mb-1 text-left text-left"><p class="font-black text-[10px] uppercase text-slate-200 text-left">${
+                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700 text-left mb-2 shadow-inner text-left">
+                    <div class="flex justify-between items-start mb-1 text-left text-left text-left"><p class="font-black text-[10px] uppercase text-slate-200 text-left text-left">${
                       s.name
                     } (v.${s.level})</p><button onclick="hireStaff('${
               s.id
             }')" class="bg-sky-700 text-white text-[8px] font-black px-3 py-1 rounded-lg ${
               s.level >= s.maxLevel ? "hidden" : ""
             }">UPPGRADERA</button></div>
-                    <p class="text-[8px] text-slate-500 leading-tight text-left">${
+                    <p class="text-[8px] text-slate-500 leading-tight text-left text-left">${
                       s.desc
                     }</p>
                 </div>
@@ -1077,10 +1099,10 @@
           gameState.hallExpansions
             .map(
               (e) => `
-                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700 flex justify-between items-center mb-1 ${
+                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700 flex justify-between items-center mb-1 text-left ${
                   e.bought ? "opacity-30" : ""
                 }">
-                    <p class="font-black text-[10px] uppercase text-left">${
+                    <p class="font-black text-[10px] uppercase text-left text-left">${
                       e.name
                     }</p>
                     <button onclick="buyHall(${
@@ -1090,7 +1112,7 @@
               }">BYGG (${formatMoney(e.cost)})</button>
                     ${
                       e.bought
-                        ? '<span class="text-green-500 text-[8px] font-black uppercase italic tracking-widest text-right">Aktiv</span>'
+                        ? '<span class="text-green-500 text-[8px] font-black uppercase italic tracking-widest text-right text-right">Aktiv</span>'
                         : ""
                     }
                 </div>
@@ -1102,18 +1124,18 @@
           gameState.availableMovies
             .map(
               (m) => `
-                <div class="p-2 bg-slate-800/40 rounded-xl border border-slate-700 border-dashed flex gap-3 items-center text-left mb-2">
+                <div class="p-2 bg-slate-800/40 rounded-xl border border-slate-700 border-dashed flex gap-3 items-center text-left mb-2 text-left">
                     <img src="${
                       m.poster
                     }" class="w-8 h-12 rounded object-cover grayscale opacity-50">
-                    <div class="flex-1"><p class="font-black text-[10px] text-slate-300 uppercase leading-tight text-left text-left">${
+                    <div class="flex-1"><p class="font-black text-[10px] text-slate-300 uppercase leading-tight text-left text-left text-left">${
                       m.title
-                    }</p><p class="text-[8px] text-green-500 font-black mt-1 text-left">${formatMoney(
+                    }</p><p class="text-[8px] text-green-500 font-black mt-1 text-left text-left">${formatMoney(
                 m.cost
               )}</p></div>
                     <button onclick="buyMovie('${
                       m.id
-                    }')" class="bg-green-700 hover:bg-green-600 text-white text-[8px] font-black px-3 py-2 rounded-xl ${
+                    }')" class="bg-green-700 hover:bg-green-600 text-white text-[8px] font-black px-3 py-2 rounded-lg ${
                 gameState.money < m.cost ? "opacity-30" : ""
               }">KÖP</button>
                 </div>
@@ -1208,17 +1230,11 @@
         const emptyIdx = daySchedule.findIndex((s) => s === null);
 
         if (emptyIdx !== -1) {
-          // Lägg till filmen i första lediga slot
           daySchedule[emptyIdx] = mId;
-
-          // Kontrollera om dagen nu blev full efter detta val
           const isDayNowFull = daySchedule.every((slot) => slot !== null);
-
           if (isDayNowFull && gameState.planningDayIndex < 6) {
-            // Om dagen är full och det inte är söndag (index 6), hoppa till nästa dag
             gameState.planningDayIndex++;
           }
-
           updateUI();
         } else {
           notify("Dagen är redan fullbokad!", "error");
@@ -1433,7 +1449,7 @@
                     <span class="text-xs">${
                       f.type === "negative" ? "😡" : "😊"
                     }</span>
-                    <p class="text-[10px] italic text-slate-300 leading-tight text-left">"${
+                    <p class="text-[10px] italic text-slate-300 leading-tight text-left text-left">"${
                       f.text
                     }"</p>
                 </div>
@@ -1449,26 +1465,26 @@
         });
         document.getElementById("zone-breakdown-ui").innerHTML = `
                 <div class="grid grid-cols-3 gap-2 text-[8px] uppercase font-black text-slate-500 tracking-tighter">
-                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5">Budget: ${zones.budget} st</div>
-                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5">Std: ${zones.standard} st</div>
-                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5">VIP: ${zones.vip} st</div>
+                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5 text-center text-center">Budget: ${zones.budget} st</div>
+                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5 text-center text-center text-center">Std: ${zones.standard} st</div>
+                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5 text-center text-center text-center text-center">VIP: ${zones.vip} st</div>
                 </div>`;
 
         const br = document.getElementById("slot-breakdown");
         br.innerHTML = gameState.dailyStats
           .map(
             (d) => `
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-[10px] mb-1 text-left">
-                    <div><p class="font-black text-sky-400 uppercase text-[7px] tracking-widest text-left">${
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-[10px] mb-1 text-left text-left">
+                    <div class="text-left text-left"><p class="font-black text-sky-400 uppercase text-[7px] tracking-widest text-left text-left text-left text-left">${
                       d.hallName
                     } | ${
               d.name
-            }</p><p class="font-bold text-white uppercase text-left">${
+            }</p><p class="font-bold text-white uppercase text-left text-left text-left text-left text-left">${
               d.movie
             }</p></div>
-                    <div class="text-right font-black"><p class="text-white text-right">${
+                    <div class="text-right font-black text-right text-right"><p class="text-white text-right text-right text-right text-right">${
                       d.visitors
-                    } PERS</p><p class="text-green-400 text-right">+${formatMoney(
+                    } PERS</p><p class="text-green-400 text-right text-right text-right text-right">+${formatMoney(
               d.sInc + d.tInc
             )}</p></div>
                 </div>
@@ -1485,11 +1501,10 @@
         gameState.reportOpen = false;
         gameState.dayIndex++;
 
-        // Logistik: Leverans på onsdag (Index 2)
         if (gameState.dayIndex === 2 && gameState.pendingStock > 0) {
           gameState.stock += gameState.pendingStock;
           notify(
-            `LOGISTIK: ${gameState.pendingStock} enheter levererade!`,
+            `LEVERANS: ${gameState.pendingStock} enheter levererade!`,
             "success"
           );
           gameState.pendingStock = 0;
