@@ -1,823 +1,1569 @@
 <!DOCTYPE html>
 <html lang="sv">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio-Manager Pro: Snacks & Logistik</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bio-Manager Pro: Classic Feedback Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            overflow-x: hidden;
-        }
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap");
 
-        /* --- UI Components --- */
-        .cinema-screen {
-            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.2);
-            border-bottom: 4px solid #38bdf8;
-        }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #0f172a;
+        color: #f8fafc;
+        overflow-x: hidden;
+      }
 
-        .seat {
-            width: 16px;
-            height: 16px;
-            margin: 2px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+      .glass-panel {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
-        .seat-budget { background-color: #14532d; } 
-        .seat-standard { background-color: #1e3a8a; }
-        .seat-vip { background-color: #78350f; } 
+      .cinema-screen {
+        background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+          0 0 20px rgba(56, 189, 248, 0.2);
+        border-bottom: 4px solid #38bdf8;
+      }
 
-        .seat-filled { 
-            background-color: #ef4444 !important; 
-            transform: scale(1.1); 
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
-        }
+      .seat {
+        width: 14px;
+        height: 14px;
+        margin: 1.5px;
+        border-radius: 3px;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
 
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+      .seat-budget {
+        background-color: #14532d;
+      }
+      .seat-standard {
+        background-color: #1e3a8a;
+      }
+      .seat-vip {
+        background-color: #78350f;
+      }
 
-        .tab-active {
-            border-bottom: 2px solid #38bdf8;
-            color: #38bdf8;
-            font-weight: bold;
-        }
+      .seat-filled {
+        background-color: #ef4444 !important;
+        transform: scale(1.1);
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+      }
 
-        @keyframes float {
-            0% { transform: translateY(0px); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
-        }
+      .tab-active {
+        border-bottom: 2px solid #38bdf8;
+        color: #38bdf8;
+        font-weight: bold;
+      }
 
-        .money-pop {
-            position: absolute;
-            color: #22c55e;
-            font-weight: bold;
-            pointer-events: none;
-            animation: float 0.8s ease-out forwards;
-            z-index: 50;
-            text-shadow: 0 0 4px rgba(0,0,0,0.8);
-        }
+      .hall-pill {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(15, 23, 42, 0.5);
+      }
+      .hall-pill-active {
+        background: #38bdf8;
+        color: white;
+        border-color: #38bdf8;
+      }
 
-        .day-btn-active {
-            background-color: #38bdf8 !important;
-            color: white !important;
-            border-color: #38bdf8 !important;
-        }
+      #splash-screen {
+        transition: opacity 0.8s ease-out, visibility 0.8s;
+      }
 
-        /* Splash Screen Fade */
-        #splash-screen {
-            transition: opacity 0.8s ease-out, visibility 0.8s;
+      .hidden-game {
+        display: none !important;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+          opacity: 0;
         }
-        
-        .hidden-game {
-            display: none !important;
+        50% {
+          opacity: 1;
         }
+        100% {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+      }
+
+      .money-pop {
+        position: absolute;
+        color: #22c55e;
+        font-weight: bold;
+        pointer-events: none;
+        animation: float 0.8s ease-out forwards;
+        z-index: 50;
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+      }
     </style>
-</head>
-<body class="min-h-screen">
+  </head>
+  <body class="min-h-screen">
+    <!-- Startskärm -->
+    <div
+      id="splash-screen"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950 overflow-hidden text-center px-4"
+    >
+      <div class="absolute inset-0 opacity-20 pointer-events-none">
+        <div
+          class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sky-600 blur-[120px] rounded-full"
+        ></div>
+        <div
+          class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-amber-600 blur-[120px] rounded-full"
+        ></div>
+      </div>
 
-    <!-- Splash/Startup Screen -->
-    <div id="splash-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950 overflow-hidden">
-        <!-- Background decorative elements -->
-        <div class="absolute inset-0 opacity-20 pointer-events-none">
-            <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sky-600 blur-[120px] rounded-full"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-amber-600 blur-[120px] rounded-full"></div>
-        </div>
+      <div
+        class="relative glass-panel p-8 md:p-12 rounded-[3rem] border-white/10 shadow-2xl max-w-md w-full"
+      >
+        <h1
+          class="text-5xl font-black tracking-tighter text-sky-400 uppercase italic mb-2 leading-none text-center"
+        >
+          Bio<span class="text-white">Pro</span>
+        </h1>
+        <p
+          class="text-slate-400 text-xs mb-10 font-bold uppercase tracking-[0.2em] text-center"
+        >
+          Guest Experience Edition
+        </p>
 
-        <div class="relative glass-panel p-10 rounded-[3rem] border-white/10 shadow-2xl max-w-md w-full text-center">
-            <h1 class="text-4xl font-black tracking-tighter text-sky-400 uppercase italic mb-2">Bio<span class="text-white">Pro</span></h1>
-            <p class="text-slate-400 text-sm mb-8 font-medium uppercase tracking-widest">Cinema Management Simulator</p>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 text-left px-2">Ditt namn som biografchef</label>
-                    <input type="text" id="manager-name-input" placeholder="Skriv in ditt namn..." 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 transition-all font-bold">
-                </div>
-                
-                <button onclick="startGame()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-4 rounded-2xl shadow-lg shadow-sky-900/20 transform transition-all active:scale-95 uppercase tracking-widest">
-                    Börja spela
-                </button>
-            </div>
-            
-            <p class="text-[10px] text-slate-600 mt-8 font-bold italic underline">v2.2 - Snack Revenue Detail Update</p>
+        <div class="space-y-4 text-left">
+          <div>
+            <label
+              class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-2"
+              >Manager Namn</label
+            >
+            <input
+              type="text"
+              id="manager-name-input"
+              placeholder="Ditt namn..."
+              class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-5 py-4 text-white text-center focus:outline-none focus:border-sky-500 transition-all font-bold text-lg"
+            />
+          </div>
+          <button
+            onclick="startGame()"
+            id="btn-start-game"
+            class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-4 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-widest"
+          >
+            Initierar system...
+          </button>
         </div>
+        <p
+          class="text-[9px] text-slate-600 mt-10 font-bold uppercase italic tracking-widest text-center text-center"
+        >
+          v4.1 - Smart Planning Update
+        </p>
+      </div>
     </div>
 
-    <!-- Main Game UI (Initially Hidden) -->
+    <!-- Huvudspel -->
     <div id="game-ui" class="hidden-game">
-        <header class="sticky top-0 z-50 glass-panel p-4 flex justify-between items-center shadow-2xl">
-            <div class="flex items-center space-x-6">
-                <div class="flex flex-col">
-                    <h1 class="text-xl font-black tracking-tighter text-sky-400 uppercase italic leading-none">Bio<span class="text-white">Pro</span></h1>
-                    <span id="display-manager-name" class="text-[9px] text-slate-400 font-bold tracking-widest uppercase mt-0.5">Chef: -</span>
-                </div>
-                <div class="flex space-x-4 border-l border-slate-700 pl-6">
-                    <div class="flex flex-col">
-                        <span class="text-[9px] text-slate-400 uppercase font-bold">Kassa</span>
-                        <span id="stat-money" class="text-sm font-bold text-green-400">0 kr</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] text-slate-400 uppercase font-bold">Tid</span>
-                        <span id="stat-day" class="text-sm font-bold text-white">Måndag (V.1)</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] text-slate-400 uppercase font-bold">Lager</span>
-                        <span id="stat-stock" class="text-sm font-bold text-amber-400">0 st</span>
-                    </div>
-                </div>
+      <header
+        class="sticky top-0 z-50 glass-panel p-4 flex justify-between items-center shadow-2xl border-b border-white/5"
+      >
+        <div class="flex items-center space-x-6">
+          <div class="flex flex-col text-left">
+            <h1
+              class="text-xl font-black tracking-tighter text-sky-400 uppercase italic leading-none"
+            >
+              Bio<span class="text-white">Pro</span>
+            </h1>
+            <span
+              id="display-manager-name"
+              class="text-[9px] text-slate-400 font-bold tracking-widest uppercase mt-0.5 tracking-tighter"
+              >Chef: -</span
+            >
+          </div>
+          <div
+            class="flex space-x-4 border-l border-slate-700 pl-6 text-center"
+          >
+            <div class="flex flex-col text-left">
+              <span
+                class="text-[9px] text-slate-400 uppercase font-bold text-[8px]"
+                >Kassa</span
+              ><span id="stat-money" class="text-sm font-bold text-green-400"
+                >0 kr</span
+              >
             </div>
-            <button id="btn-main-control" class="px-8 py-2.5 rounded-full font-bold transition-all transform active:scale-95 shadow-lg text-sm bg-slate-800 text-slate-500 cursor-not-allowed">
-                Planera Veckan
-            </button>
-        </header>
-
-        <main class="container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Salongen Section -->
-            <div class="lg:col-span-2 space-y-6">
-                <section class="glass-panel rounded-3xl p-8 overflow-hidden relative border-slate-700">
-                    <div class="flex justify-between items-center mb-8">
-                        <div>
-                            <h2 class="text-xl font-bold">Biosalongen</h2>
-                            <p id="movie-now-playing" class="text-xs text-slate-400 italic mt-1">Veckoplanering pågår</p>
-                        </div>
-                        <div class="text-right">
-                            <div id="visitor-count" class="text-lg font-mono font-bold text-sky-400">0 / 100</div>
-                            <div class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Besökare</div>
-                        </div>
-                    </div>
-                    
-                    <div class="relative flex flex-col items-center">
-                        <div class="cinema-screen w-full max-w-md h-8 rounded-t-3xl mb-10 flex items-center justify-center text-[10px] text-slate-500 uppercase tracking-widest font-bold">Filmduk</div>
-                        <div id="seats-container" class="grid grid-cols-10 gap-1.5 mb-10 p-4 bg-slate-900/40 rounded-2xl border border-slate-800"></div>
-                        <div class="flex items-center space-x-12 text-[10px] uppercase font-bold tracking-widest text-slate-500 text-center">
-                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 seat-budget rounded-sm"></div> Budget</div>
-                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 seat-standard rounded-sm"></div> Standard</div>
-                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 seat-vip rounded-sm"></div> VIP</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="sim-indicator" class="hidden glass-panel border-sky-500 border-2 rounded-3xl p-10 text-center animate-pulse">
-                    <h3 class="text-2xl font-black text-sky-400 mb-2 uppercase italic">Visning pågår</h3>
-                    <div class="h-3 bg-slate-800 rounded-full overflow-hidden max-w-md mx-auto mt-6">
-                        <div id="sim-progress" class="h-full bg-sky-500 w-0 transition-all duration-75"></div>
-                    </div>
-                </section>
-
-                <section id="daily-report" class="hidden glass-panel border-green-500 border-2 rounded-3xl p-8 bg-slate-900/98 shadow-2xl">
-                    <div class="flex justify-between items-end mb-8 italic">
-                        <h3 class="text-3xl font-black text-white uppercase tracking-tighter">Dagsrapport</h3>
-                        <p id="report-day-name" class="text-green-400 font-bold uppercase tracking-widest"></p>
-                    </div>
-
-                    <div class="mb-6">
-                        <h4 class="text-[10px] font-black uppercase text-sky-400 mb-2 tracking-widest">Kundrespons</h4>
-                        <div id="rep-feedback-list" class="space-y-2"></div>
-                    </div>
-
-                    <div id="slot-breakdown" class="space-y-3 mb-8 max-h-[200px] overflow-y-auto pr-2"></div>
-                    <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <!-- Uppdaterad vy för separata intäkter -->
-                        <div class="flex justify-between mb-1 text-slate-300 italic text-sm"><span>Biljettintäkter:</span><span id="rep-ticket-income" class="font-bold text-white"></span></div>
-                        <div class="flex justify-between mb-2 text-slate-300 italic text-sm"><span>Snacksintäkter:</span><span id="rep-snack-income" class="font-bold text-white"></span></div>
-                        
-                        <div class="flex justify-between text-red-400 text-xs mb-4"><span>Omkostnader:</span><span id="rep-costs"></span></div>
-                        <div class="flex justify-between border-t border-slate-600 pt-4 text-2xl font-black italic">
-                            <span class="text-white uppercase tracking-tighter">Netto:</span>
-                            <span id="rep-total" class="font-black text-green-400 text-3xl"></span>
-                        </div>
-                    </div>
-                </section>
+            <div class="flex flex-col text-left">
+              <span
+                class="text-[9px] text-slate-400 uppercase font-bold text-[8px]"
+                >Tid</span
+              ><span
+                id="stat-day"
+                class="text-sm font-bold text-white uppercase text-[10px]"
+                >Måndag</span
+              >
             </div>
-
-            <!-- Sidebar Controls -->
-            <div class="space-y-6">
-                <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl border-slate-700">
-                    <div class="flex border-b border-slate-700 bg-slate-800/30">
-                        <button onclick="switchTab('tab-planning')" id="btn-tab-planning" class="flex-1 py-4 text-xs uppercase tracking-widest tab-active">Planera</button>
-                        <button onclick="switchTab('tab-shop')" id="btn-tab-shop" class="flex-1 py-4 text-xs uppercase tracking-widest text-slate-400">Butik</button>
-                        <button onclick="switchTab('tab-business')" id="btn-tab-business" class="flex-1 py-4 text-xs uppercase tracking-widest text-slate-400">Företag</button>
-                        <button onclick="switchTab('tab-settings')" id="btn-tab-settings" class="flex-1 py-4 text-xs uppercase tracking-widest text-slate-400 text-center">Pris</button>
-                    </div>
-
-                    <!-- Planera Tab -->
-                    <div id="tab-planning" class="p-5 space-y-6">
-                        <div>
-                            <h4 class="text-[10px] font-black uppercase text-sky-400 mb-3 tracking-widest italic">Veckans Schema</h4>
-                            <div id="planning-day-selector" class="flex gap-1 overflow-x-auto pb-2 mb-4"></div>
-                            <div id="daily-schedule-ui" class="space-y-2 p-4 bg-slate-900/60 rounded-2xl border border-slate-800 mb-4"></div>
-                            <button id="btn-confirm-week" onclick="confirmWeek()" class="hidden w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all">Lås Veckoschema</button>
-                        </div>
-                        <div class="pt-4 border-t border-slate-700">
-                            <h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Ditt Bibliotek</h4>
-                            <div id="owned-movie-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1"></div>
-                        </div>
-                    </div>
-
-                    <!-- Shop Tab -->
-                    <div id="tab-shop" class="p-5 hidden space-y-4">
-                        <h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest text-center">Nya Licenser</h4>
-                        <div id="shop-movie-list" class="space-y-2"></div>
-                    </div>
-
-                    <!-- Företag Tab -->
-                    <div id="tab-business" class="p-5 hidden space-y-6">
-                        <section>
-                            <h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest italic">Logistik & Lager</h4>
-                            <div class="space-y-2">
-                                <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <div><p class="text-lg font-bold" id="ui-stock-display">0 st</p><p class="text-[8px] text-slate-400 uppercase">Lager</p></div>
-                                        <div class="text-right"><p class="text-lg font-bold text-amber-500" id="ui-pending-display">0 st</p><p class="text-[8px] text-slate-400 uppercase">Väntande</p></div>
-                                    </div>
-                                    <button id="btn-buy-stock" onclick="buyStock()" class="w-full py-2.5 rounded-xl font-bold text-[10px] uppercase transition-all shadow-lg">Beställ 200st (1 000kr)</button>
-                                    <p id="stock-order-info" class="text-[8px] text-slate-500 mt-2 text-center font-bold">Måndagsbeställning / Onsdagsleverans</p>
-                                </div>
-                            </div>
-                        </section>
-                        <section>
-                            <h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest text-center">Bank & Skuld</h4>
-                            <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
-                                <div class="flex justify-between text-xs mb-3"><span>Skuld:</span><span id="ui-debt-display" class="font-bold text-red-400">0 kr</span></div>
-                                <button onclick="takeLoan()" class="w-full bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-bold py-2 rounded-lg uppercase">Ta Lån (5 000 kr)</button>
-                            </div>
-                        </section>
-                        <section>
-                            <h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest text-center">Personal</h4>
-                            <div id="staff-list" class="space-y-2"></div>
-                        </section>
-                    </div>
-
-                    <!-- Pris Tab -->
-                    <div id="tab-settings" class="p-5 hidden space-y-6 text-center">
-                        <section>
-                            <h4 class="text-[10px] font-black uppercase text-sky-400 mb-4 tracking-widest italic">Prissättning</h4>
-                            <div class="space-y-6">
-                                <div>
-                                    <label class="flex justify-between text-[10px] font-bold uppercase text-slate-400 mb-2"><span>Baspris Biljett</span><span id="price-standard-val">120 kr</span></label>
-                                    <input type="range" id="price-slider" min="50" max="400" step="10" value="120" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500">
-                                    <div class="grid grid-cols-3 gap-2 mt-2">
-                                        <div class="bg-slate-800/50 p-2 rounded-lg border border-slate-700">
-                                            <p class="text-[8px] text-slate-500 font-bold uppercase">Budget</p>
-                                            <p id="price-budget-display" class="font-bold text-green-400 text-[10px]"></p>
-                                        </div>
-                                        <div class="bg-slate-800/50 p-2 rounded-lg border border-slate-700">
-                                            <p class="text-[8px] text-slate-500 font-bold uppercase">Standard</p>
-                                            <p id="price-standard-display" class="font-bold text-sky-400 text-[10px]"></p>
-                                        </div>
-                                        <div class="bg-slate-800/50 p-2 rounded-lg border border-slate-700">
-                                            <p class="text-[8px] text-slate-500 font-bold uppercase">VIP</p>
-                                            <p id="price-vip-display" class="font-bold text-yellow-500 text-[10px]"></p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pt-4 border-t border-slate-700">
-                                    <label class="flex justify-between text-[10px] font-bold uppercase text-slate-400 mb-2"><span>Pris Snacks</span><span id="price-snack-val">50 kr</span></label>
-                                    <input type="range" id="price-snack-slider" min="20" max="200" step="5" value="50" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500">
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
+            <div class="flex flex-col text-left">
+              <span
+                class="text-[9px] text-slate-400 uppercase font-bold text-[8px]"
+                >Lager</span
+              ><span id="stat-stock" class="text-sm font-bold text-amber-400"
+                >0 st</span
+              >
             </div>
+          </div>
         </div>
-    </main>
+        <button
+          id="btn-main-control"
+          class="px-6 md:px-8 py-2.5 rounded-full font-black transition-all transform active:scale-95 shadow-lg text-sm bg-slate-800 text-slate-500 cursor-not-allowed uppercase tracking-tighter"
+        >
+          Planera Veckan
+        </button>
+      </header>
 
-    <div id="notifications" class="fixed bottom-6 right-6 z-[100] flex flex-col space-y-2 pointer-events-none"></div>
+      <main
+        class="container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
+        <div class="lg:col-span-2 space-y-6">
+          <section
+            class="glass-panel rounded-3xl p-6 md:p-8 overflow-hidden relative border-slate-700 shadow-xl text-center"
+          >
+            <div class="flex justify-between items-start mb-6 text-left">
+              <div>
+                <div
+                  class="flex items-center gap-2 mb-2"
+                  id="hall-view-selector"
+                ></div>
+                <h2
+                  class="text-xl font-black uppercase italic tracking-tighter"
+                  id="current-view-hall-name"
+                >
+                  Salong 1
+                </h2>
+                <p
+                  id="movie-now-playing"
+                  class="text-[11px] text-slate-400 italic font-medium"
+                >
+                  Laddar biografen...
+                </p>
+              </div>
+              <div class="text-right text-xs">
+                <div
+                  id="visitor-count"
+                  class="text-lg font-mono font-bold text-sky-400 tracking-tighter leading-none"
+                >
+                  0 / 100
+                </div>
+                <div
+                  class="text-[8px] text-slate-500 uppercase font-black tracking-widest mt-1"
+                >
+                  Besökare
+                </div>
+              </div>
+            </div>
+
+            <div class="relative flex flex-col items-center">
+              <div
+                class="cinema-screen w-full max-w-md h-6 rounded-t-3xl mb-10 flex items-center justify-center text-[9px] text-slate-500 uppercase tracking-[0.8em] font-black"
+              >
+                Filmduk
+              </div>
+              <div
+                id="seats-container"
+                class="grid grid-cols-10 gap-1 md:gap-1.5 mb-8 p-4 bg-slate-900/40 rounded-2xl border border-slate-800 shadow-inner mx-auto"
+              ></div>
+              <div
+                class="flex flex-wrap justify-center gap-4 text-[9px] uppercase font-black tracking-widest text-slate-500"
+              >
+                <div class="flex items-center gap-1.5">
+                  <div class="w-3 h-3 seat-budget rounded-sm"></div>
+                  Budget
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="w-3 h-3 seat-standard rounded-sm"></div>
+                  Standard
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="w-3 h-3 seat-vip rounded-sm"></div>
+                  VIP
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="sim-indicator"
+            class="hidden glass-panel border-sky-500 border-2 rounded-3xl p-10 text-center animate-pulse"
+          >
+            <h3
+              class="text-2xl font-black text-sky-400 mb-2 uppercase italic tracking-widest"
+            >
+              Visning pågår
+            </h3>
+            <div
+              class="h-2 bg-slate-800 rounded-full overflow-hidden max-w-md mx-auto mt-6 shadow-inner"
+            >
+              <div
+                id="sim-progress"
+                class="h-full bg-sky-500 w-0 transition-all duration-75 shadow-[0_0_10px_rgba(56,189,248,0.3)]"
+              ></div>
+            </div>
+          </section>
+
+          <!-- Dagsrapport -->
+          <section
+            id="daily-report"
+            class="hidden glass-panel border-green-500 border-2 rounded-3xl p-6 md:p-8 bg-slate-900/98 shadow-2xl text-left"
+          >
+            <div class="flex justify-between items-end mb-6">
+              <h3
+                class="text-2xl font-black text-white uppercase italic tracking-tighter leading-none text-left"
+              >
+                Dagsrapport
+              </h3>
+              <p
+                id="report-day-name"
+                class="text-green-400 font-bold uppercase tracking-widest text-xs"
+              ></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div
+                class="p-5 bg-sky-950/30 border border-sky-500/20 rounded-2xl ring-1 ring-white/5 relative overflow-hidden"
+              >
+                <h4
+                  class="text-[9px] font-black uppercase text-sky-400 mb-1 tracking-widest text-left"
+                >
+                  Supervisor Status
+                </h4>
+                <p
+                  id="supervisor-mood-label"
+                  class="text-xs font-bold text-white mb-3 uppercase tracking-tighter text-left text-left"
+                >
+                  Stabil
+                </p>
+                <p
+                  id="shift-leader-text"
+                  class="text-xs text-slate-300 leading-relaxed italic text-left text-left"
+                ></p>
+              </div>
+              <div
+                class="p-5 bg-amber-950/20 border border-amber-500/20 rounded-2xl ring-1 ring-white/5 text-left"
+              >
+                <h4
+                  class="text-[9px] font-black uppercase text-amber-400 mb-2 tracking-widest text-left text-left"
+                >
+                  Gästernas Röster
+                </h4>
+                <div id="guest-feedback-list" class="space-y-2 text-left"></div>
+              </div>
+            </div>
+
+            <div
+              id="slot-breakdown"
+              class="space-y-2 mb-6 max-h-[250px] overflow-y-auto pr-2"
+            ></div>
+
+            <div
+              class="bg-slate-800/50 p-5 rounded-2xl border border-slate-700 text-left"
+            >
+              <div class="flex justify-between mb-1 text-slate-400 text-xs">
+                <span>Biljettintäkter:</span
+                ><span
+                  id="rep-ticket-income"
+                  class="font-bold text-white"
+                ></span>
+              </div>
+              <div
+                class="flex justify-between mb-2 text-slate-400 text-xs border-b border-slate-700 pb-2"
+              >
+                <span>Snacksförsäljning:</span
+                ><span
+                  id="rep-snack-income"
+                  class="font-bold text-white"
+                ></span>
+              </div>
+              <div id="zone-breakdown-ui" class="space-y-1 mb-4 pt-2"></div>
+              <div
+                class="flex justify-between text-red-400 text-[10px] mb-4 uppercase font-bold tracking-widest text-left"
+              >
+                <span>Operativa Utgifter:</span><span id="rep-costs"></span>
+              </div>
+              <div
+                class="flex justify-between border-t border-slate-600 pt-4 text-left"
+              >
+                <span
+                  class="text-white uppercase tracking-tighter text-lg font-bold italic"
+                  >Nettoresultat:</span
+                >
+                <span
+                  id="rep-total"
+                  class="font-black text-green-400 text-3xl italic tracking-tighter text-left"
+                ></span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+          <div
+            class="glass-panel rounded-3xl overflow-hidden shadow-2xl border-slate-700"
+          >
+            <div class="flex border-b border-slate-700 bg-slate-800/30">
+              <button
+                onclick="switchTab('tab-planning')"
+                id="btn-tab-planning"
+                class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest tab-active"
+              >
+                Planera
+              </button>
+              <button
+                onclick="switchTab('tab-shop')"
+                id="btn-tab-shop"
+                class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400"
+              >
+                Butik
+              </button>
+              <button
+                onclick="switchTab('tab-business')"
+                id="btn-tab-business"
+                class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400"
+              >
+                Företag
+              </button>
+              <button
+                onclick="switchTab('tab-settings')"
+                id="btn-tab-settings"
+                class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400 text-center"
+              >
+                Pris
+              </button>
+            </div>
+
+            <div id="tab-planning" class="p-5 space-y-6 text-left">
+              <div class="space-y-4">
+                <div class="flex justify-between items-end">
+                  <h4
+                    class="text-[10px] font-black uppercase text-sky-400 tracking-widest italic text-left leading-none"
+                  >
+                    Veckoplan
+                  </h4>
+                  <span
+                    class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter text-right"
+                    >V. <span id="planning-week-num">1</span></span
+                  >
+                </div>
+                <div
+                  class="flex gap-2 overflow-x-auto pb-1"
+                  id="planning-hall-selector"
+                ></div>
+                <div
+                  id="planning-day-selector"
+                  class="flex gap-1 overflow-x-auto pb-2 border-b border-slate-800 text-left"
+                ></div>
+                <div
+                  id="daily-schedule-ui"
+                  class="space-y-2 py-2 text-left"
+                ></div>
+                <button
+                  id="btn-confirm-week"
+                  onclick="confirmWeek()"
+                  class="hidden w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-2xl shadow-lg transition-all uppercase text-xs tracking-widest"
+                >
+                  Fastställ Schema
+                </button>
+              </div>
+              <div class="pt-4 border-t border-slate-700">
+                <h4
+                  class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest italic text-left text-xs leading-none"
+                >
+                  Bibliotek
+                </h4>
+                <div
+                  id="owned-movie-list"
+                  class="space-y-2 max-h-[300px] overflow-y-auto pr-1"
+                ></div>
+              </div>
+            </div>
+
+            <div id="tab-shop" class="p-5 hidden space-y-4 text-left">
+              <h4
+                class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest text-center text-xs"
+              >
+                Licensmarknad
+              </h4>
+              <div id="shop-movie-list" class="space-y-3"></div>
+            </div>
+
+            <div id="tab-business" class="p-5 hidden space-y-8 text-left">
+              <section>
+                <h4
+                  class="text-[10px] font-black uppercase text-sky-400 mb-3 tracking-widest italic"
+                >
+                  Expansion
+                </h4>
+                <div id="expansion-list" class="space-y-2"></div>
+              </section>
+              <section>
+                <h4
+                  class="text-[10px] font-black uppercase text-sky-400 mb-3 tracking-widest italic"
+                >
+                  Logistik & Lager
+                </h4>
+                <div
+                  class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-inner"
+                >
+                  <div class="flex justify-between items-center mb-3 text-left">
+                    <div>
+                      <p class="text-lg font-bold" id="ui-stock-display">
+                        0 st
+                      </p>
+                      <p class="text-[8px] text-slate-400 uppercase font-black">
+                        Lager
+                      </p>
+                    </div>
+                    <div class="text-right">
+                      <p
+                        class="text-lg font-bold text-amber-500"
+                        id="ui-pending-display"
+                      >
+                        0 st
+                      </p>
+                      <p
+                        class="text-[8px] text-slate-400 uppercase font-black tracking-tight text-right text-right text-right"
+                      >
+                        Väntande
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    id="btn-buy-stock"
+                    onclick="buyStock()"
+                    class="w-full py-3 rounded-xl font-black text-[10px] uppercase transition-all shadow-lg"
+                  >
+                    Beställ 400st (2 000kr)
+                  </button>
+                  <p
+                    id="stock-order-info"
+                    class="text-[7px] text-slate-500 mt-2 text-center uppercase font-bold tracking-tighter"
+                  >
+                    Endast måndagar. Leverans på onsdagar.
+                  </p>
+                </div>
+              </section>
+              <section>
+                <h4
+                  class="text-[10px] font-black uppercase text-sky-400 mb-3 tracking-widest italic text-left text-left text-left"
+                >
+                  Personal
+                </h4>
+                <div
+                  id="staff-list"
+                  class="space-y-3 text-left text-left"
+                ></div>
+              </section>
+            </div>
+
+            <div id="tab-settings" class="p-5 hidden space-y-6">
+              <section>
+                <h4
+                  class="text-[10px] font-black uppercase text-sky-400 mb-4 tracking-widest italic text-center text-xs"
+                >
+                  Prisstrategi
+                </h4>
+                <div class="space-y-8 text-center px-2">
+                  <div>
+                    <label
+                      class="flex justify-between text-[10px] font-bold uppercase text-slate-400 mb-3 text-left leading-none text-left"
+                      ><span>Baspris Biljett</span
+                      ><span
+                        id="price-standard-val"
+                        class="text-sky-400 font-black text-lg text-right"
+                        >120 kr</span
+                      ></label
+                    >
+                    <input
+                      type="range"
+                      id="price-slider"
+                      min="50"
+                      max="450"
+                      step="10"
+                      value="120"
+                      class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                    />
+                    <div class="grid grid-cols-3 gap-2 mt-4 text-center">
+                      <div
+                        class="bg-slate-800/50 p-2 rounded-lg border border-slate-700"
+                      >
+                        <p
+                          class="text-[7px] text-slate-500 font-black uppercase mb-1"
+                        >
+                          Budget
+                        </p>
+                        <p
+                          id="price-budget-display"
+                          class="font-black text-green-400 text-[10px]"
+                        ></p>
+                      </div>
+                      <div
+                        class="bg-slate-800/50 p-2 rounded-lg border border-slate-700 ring-1 ring-sky-500/30"
+                      >
+                        <p
+                          class="text-[7px] text-slate-500 font-black uppercase mb-1"
+                        >
+                          Standard
+                        </p>
+                        <p
+                          id="price-standard-display"
+                          class="font-black text-sky-400 text-[10px]"
+                        ></p>
+                      </div>
+                      <div
+                        class="bg-slate-800/50 p-2 rounded-lg border border-slate-700"
+                      >
+                        <p
+                          class="text-[7px] text-slate-500 font-black uppercase mb-1"
+                        >
+                          VIP
+                        </p>
+                        <p
+                          id="price-vip-display"
+                          class="font-black text-yellow-500 text-[10px]"
+                        ></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pt-6 border-t border-slate-700 text-center">
+                    <label
+                      class="flex justify-between text-[10px] font-bold uppercase text-slate-400 mb-3 text-left leading-none text-left"
+                      ><span>Snacks-Combo</span
+                      ><span
+                        id="price-snack-val"
+                        class="text-amber-400 font-black text-lg text-right"
+                        >55 kr</span
+                      ></label
+                    >
+                    <input
+                      type="range"
+                      id="price-snack-slider"
+                      min="20"
+                      max="250"
+                      step="5"
+                      value="55"
+                      class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    />
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div
+      id="notifications"
+      class="fixed bottom-6 right-6 z-[150] flex flex-col space-y-2 pointer-events-none text-left"
+    ></div>
 
     <script>
-        // --- DATA & STATE ---
-        const DAY_NAMES = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'];
-        const WEEK_LOGIC = {
-            0: { slots: ['Eftermiddag', 'Kväll'] },
-            1: { slots: ['Eftermiddag', 'Kväll'] },
-            2: { slots: ['Eftermiddag', 'Kväll'] },
-            3: { slots: ['Eftermiddag', 'Kväll'] },
-            4: { slots: ['Eftermiddag', 'Kväll', 'Nattbio'] },
-            5: { slots: ['Matiné', 'Eftermiddag', 'Kväll', 'Nattbio'] },
-            6: { slots: ['Matiné', 'Eftermiddag', 'Kväll'] }
-        };
+      // --- DATA & STATE ---
+      const TMDB_API_KEY = "04c35731a5ee918f014970082a0088b1";
+      const IMAGE_BASE = "https://image.tmdb.org/t/p/w200";
+      const DAY_NAMES = [
+        "Måndag",
+        "Tisdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lördag",
+        "Söndag",
+      ];
 
-        const gameState = {
-            managerName: "",
-            money: 2000,
-            stock: 300,
-            pendingStock: 0, 
-            debt: 0,
-            weekCount: 1,
-            dayIndex: 0,
-            reputation: 0.5,
-            ticketPrice: 120,
-            snackPrice: 50,
-            theaterCondition: 1.0,
-            isSimulating: false,
-            reportOpen: false,
-            weekPlanned: false, 
-            planningDayIndex: 0, 
-            schedule: [[null, null], [null, null], [null, null], [null, null], [null, null, null], [null, null, null, null], [null, null, null]],
-            inventory: [
-                { id: 'm1', title: 'Galaxens Hjältar', genre: 'Sci-Fi', popularity: 0.85, quality: 0.8 },
-                { id: 'm2', title: 'Kärlek på Isen', genre: 'Romantik', popularity: 0.6, quality: 0.7 },
-                { id: 'm3', title: 'Lego: Biografen', genre: 'Familj', popularity: 0.75, quality: 0.9 }
-            ],
-            availableMovies: [
-                { id: 'm4', title: 'Motorsågen 9', genre: 'Skräck', cost: 800, popularity: 0.9, quality: 0.4 },
-                { id: 'm5', title: 'Solsidan: Filmen', genre: 'Komedi', cost: 500, popularity: 0.7, quality: 0.6 },
-                { id: 'm6', title: 'Actionhjälten 2', genre: 'Action', cost: 1500, popularity: 0.95, quality: 0.8 }
-            ],
-            staff: [
-                { id: 's1', name: 'Städare', level: 0, maxLevel: 3, wage: 100 },
-                { id: 's2', name: 'Säkerhetsvakt', level: 0, maxLevel: 2, wage: 200 }
-            ],
-            dailyStats: []
-        };
+      const WEEK_LOGIC = {
+        0: { slots: ["Eftermiddag", "Kväll"], times: ["15:30", "19:00"] },
+        1: { slots: ["Eftermiddag", "Kväll"], times: ["15:30", "19:00"] },
+        2: { slots: ["Eftermiddag", "Kväll"], times: ["15:30", "19:00"] },
+        3: { slots: ["Eftermiddag", "Kväll"], times: ["15:30", "19:00"] },
+        4: {
+          slots: ["Eftermiddag", "Kväll", "Nattbio"],
+          times: ["15:30", "19:00", "22:30"],
+        },
+        5: {
+          slots: ["Matiné", "Eftermiddag", "Kväll", "Nattbio"],
+          times: ["11:00", "15:00", "19:00", "22:30"],
+        },
+        6: {
+          slots: ["Matiné", "Eftermiddag", "Kväll"],
+          times: ["11:00", "15:00", "19:00"],
+        },
+      };
 
-        // --- STARTUP LOGIC ---
-        function startGame() {
-            const input = document.getElementById('manager-name-input');
-            const name = input.value.trim();
-            
-            if (name === "") {
-                input.classList.add('border-red-500');
-                setTimeout(() => input.classList.remove('border-red-500'), 1000);
-                return;
-            }
+      const gameState = {
+        managerName: "",
+        money: 5000,
+        stock: 400,
+        pendingStock: 0,
+        debt: 0,
+        weekCount: 1,
+        dayIndex: 0,
+        reputation: 0.6,
+        ticketPrice: 140,
+        snackPrice: 65,
+        theaterCondition: 1.0,
+        isSimulating: false,
+        reportOpen: false,
+        weekPlanned: false,
+        planningDayIndex: 0,
+        planningHallIndex: 0,
+        currentViewHall: 0,
+        halls: [{ id: 0, name: "Salong 1", capacity: 100, active: true }],
+        hallExpansions: [
+          { id: 1, name: "Salong 2", cost: 15000, bought: false },
+          { id: 2, name: "Salong 3", cost: 40000, bought: false },
+        ],
+        schedules: {
+          0: Array.from({ length: 7 }, (_, d) =>
+            new Array(WEEK_LOGIC[d].slots.length).fill(null)
+          ),
+          1: Array.from({ length: 7 }, (_, d) =>
+            new Array(WEEK_LOGIC[d].slots.length).fill(null)
+          ),
+          2: Array.from({ length: 7 }, (_, d) =>
+            new Array(WEEK_LOGIC[d].slots.length).fill(null)
+          ),
+        },
+        inventory: [],
+        availableMovies: [],
+        staff: [
+          {
+            id: "s1",
+            name: "Service Team",
+            level: 0,
+            maxLevel: 5,
+            wage: 200,
+            desc: "Håller salongerna rena och minskar slitage.",
+          },
+          {
+            id: "s2",
+            name: "Tech Ops",
+            level: 0,
+            maxLevel: 3,
+            wage: 250,
+            desc: "Säkrar ljud och bildkvalitet för gästerna.",
+          },
+        ],
+        dailyStats: [],
+      };
 
-            gameState.managerName = name;
-            
-            // UI Transition
-            const splash = document.getElementById('splash-screen');
-            const gameUi = document.getElementById('game-ui');
-            
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.visibility = 'hidden';
-                gameUi.classList.remove('hidden-game');
-                updateUI();
-                notify(`Välkommen Chef ${gameState.managerName}! Planera din första vecka.`, 'success');
-            }, 800);
+      const fallbackMovies = [
+        {
+          id: "f1",
+          title: "Original Äventyr",
+          poster: "https://via.placeholder.com/200x300?text=Film",
+          popularity: 0.8,
+          quality: 0.7,
+          owned: true,
+        },
+        {
+          id: "f2",
+          title: "Stadens Hjältar",
+          poster: "https://via.placeholder.com/200x300?text=Action",
+          popularity: 0.9,
+          quality: 0.6,
+          owned: true,
+        },
+      ];
+
+      // --- TMDB FETCH ---
+      async function fetchMovies() {
+        try {
+          const response = await fetch(
+            `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=sv-SE&page=1`
+          );
+          if (!response.ok) throw new Error();
+          const data = await response.json();
+          const movies = data.results.map((m) => ({
+            id: m.id.toString(),
+            title: m.title,
+            poster: m.poster_path
+              ? IMAGE_BASE + m.poster_path
+              : "https://via.placeholder.com/200x300?text=Film",
+            popularity: m.popularity / 1200 + 0.5,
+            quality: m.vote_average / 10,
+            owned: false,
+          }));
+          gameState.inventory = movies
+            .slice(0, 4)
+            .map((m) => ({ ...m, owned: true }));
+          gameState.availableMovies = movies
+            .slice(4, 16)
+            .map((m) => ({
+              ...m,
+              cost: Math.floor(Math.random() * 1000) + 400,
+            }));
+        } catch (error) {
+          gameState.inventory = fallbackMovies;
+          gameState.availableMovies = [
+            {
+              id: "shop1",
+              title: "Standard Film",
+              cost: 500,
+              poster: "",
+              popularity: 0.7,
+              quality: 0.7,
+            },
+          ];
+        }
+        const startBtn = document.getElementById("btn-start-game");
+        startBtn.innerText = "Börja spela";
+        startBtn.classList.replace("bg-slate-700", "bg-sky-600");
+        updateUI();
+      }
+
+      function startGame() {
+        const input = document.getElementById("manager-name-input");
+        if (input.value.trim() === "") {
+          input.focus();
+          return;
+        }
+        gameState.managerName = input.value.trim();
+        document.getElementById("splash-screen").style.opacity = "0";
+        setTimeout(() => {
+          document.getElementById("splash-screen").style.visibility = "hidden";
+          document.getElementById("game-ui").classList.remove("hidden-game");
+          resetSeatsUI();
+          updateUI();
+        }, 800);
+      }
+
+      // --- HELPERS ---
+      function getZone(idx) {
+        const row = Math.floor(idx / 10);
+        if (row <= 2) return "budget";
+        if (row <= 7) return "standard";
+        return "vip";
+      }
+
+      function getPriceForSeat(idx) {
+        const z = getZone(idx);
+        if (z === "budget") return Math.floor(gameState.ticketPrice * 0.8);
+        if (z === "vip") return Math.floor(gameState.ticketPrice * 1.5);
+        return gameState.ticketPrice;
+      }
+
+      function formatMoney(amount) {
+        return Math.floor(amount).toLocaleString("sv-SE") + " kr";
+      }
+      function safeSetText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+      }
+
+      function notify(msg, type = "info") {
+        const container = document.getElementById("notifications");
+        const div = document.createElement("div");
+        div.className = `${
+          type === "success"
+            ? "bg-green-600"
+            : type === "error"
+            ? "bg-red-600"
+            : "bg-slate-700"
+        } text-white px-5 py-3 rounded-2xl shadow-xl text-[9px] font-black uppercase tracking-widest border border-white/10 mb-2 transition-all`;
+        div.innerText = msg;
+        container.appendChild(div);
+        setTimeout(() => div.remove(), 5000);
+      }
+
+      // --- FEEDBACK GENERATOR ---
+      function generateGuestFeedback(stats) {
+        const feedbacks = [];
+        const ranOut = stats.some((s) => s.outOfSnacks);
+        const highPrice = gameState.ticketPrice > 250;
+        const dirty = gameState.theaterCondition < 0.5;
+
+        if (ranOut)
+          feedbacks.push({
+            text: "SKANDAL! Inga popcorn?! Katastrof.",
+            type: "negative",
+          });
+        if (highPrice)
+          feedbacks.push({
+            text: "Rån! Svindyra biljetter!",
+            type: "negative",
+          });
+        if (dirty)
+          feedbacks.push({
+            text: "Usch, klibbigt på golvet i salongen.",
+            type: "negative",
+          });
+        if (!ranOut && Math.random() > 0.5)
+          feedbacks.push({
+            text: "Mumsiga popcorn och snabb service!",
+            type: "positive",
+          });
+
+        const bestMovie = stats.sort((a, b) => b.visitors - a.visitors)[0];
+        if (bestMovie && Math.random() > 0.5)
+          feedbacks.push({
+            text: `Wow, '${bestMovie.movie}' var dunder!`,
+            type: "positive",
+          });
+
+        return feedbacks.sort(() => 0.5 - Math.random()).slice(0, 3);
+      }
+
+      function getSupervisorAnalysis(netProfit, stats) {
+        const ranOut = stats.some((s) => s.outOfSnacks);
+        let status = "Professionell";
+        let notes = "Dagen har flutit på enligt plan. ";
+
+        if (ranOut) {
+          status = "Stressad";
+          notes =
+            "Chef, logistiken svek oss idag. Tomma popcornhyllor är oacceptabelt i vår bransch.";
+        } else if (netProfit < 0) {
+          status = "Orolig";
+          notes =
+            "Vi förlorar pengar idag. Vi måste optimera biljettpriserna eller byta till mer attraktiva titlar.";
+        } else if (netProfit > 2500) {
+          status = "Exalterad";
+          notes =
+            "Vilket flow! Gästerna är nöjda och intäkterna är rekordhöga. Bra jobbat!";
+        } else {
+          notes += "Driften är stabil.";
+        }
+        return { status, notes };
+      }
+
+      // --- UI REFRESH ---
+      function updateUI() {
+        safeSetText("display-manager-name", `Chef: ${gameState.managerName}`);
+        safeSetText("stat-money", formatMoney(gameState.money));
+        safeSetText(
+          "stat-day",
+          `${DAY_NAMES[gameState.dayIndex]} (V.${gameState.weekCount})`
+        );
+        safeSetText("stat-stock", `${gameState.stock} st`);
+        safeSetText("ui-stock-display", `${gameState.stock} st`);
+        safeSetText("ui-pending-display", `${gameState.pendingStock} st`);
+        safeSetText("ui-debt-display", formatMoney(gameState.debt));
+
+        // Logistik-knapp UI
+        const buyStockBtn = document.getElementById("btn-buy-stock");
+        const stockInfo = document.getElementById("stock-order-info");
+        if (buyStockBtn) {
+          if (gameState.dayIndex === 0) {
+            buyStockBtn.disabled = false;
+            buyStockBtn.className =
+              "w-full py-3 rounded-xl font-black text-[10px] uppercase bg-amber-600 hover:bg-amber-500 text-white shadow-lg";
+            stockInfo.innerText = "Systemet är öppet idag! Leverans på onsdag.";
+          } else {
+            buyStockBtn.disabled = true;
+            buyStockBtn.className =
+              "w-full py-3 rounded-xl font-black text-[10px] uppercase bg-slate-800 text-slate-500 cursor-not-allowed";
+            stockInfo.innerText = "Beställning kan bara göras på måndagar.";
+          }
         }
 
-        // --- HELPERS ---
-        function getZone(idx) {
-            const row = Math.floor(idx / 10);
-            if (row <= 2) return 'budget';
-            if (row <= 7) return 'standard';
-            return 'vip';
-        }
+        document.getElementById("hall-view-selector").innerHTML =
+          gameState.halls
+            .map(
+              (h) => `
+                <div onclick="setViewHall(${h.id})" class="hall-pill ${
+                gameState.currentViewHall === h.id ? "hall-pill-active" : ""
+              }">${h.name}</div>
+            `
+            )
+            .join("");
 
-        function getPriceForSeat(idx) {
-            const zone = getZone(idx);
-            if (zone === 'budget') return Math.floor(gameState.ticketPrice * 0.8);
-            if (zone === 'vip') return Math.floor(gameState.ticketPrice * 1.5);
-            return gameState.ticketPrice;
-        }
+        document.getElementById("planning-hall-selector").innerHTML =
+          gameState.halls
+            .map(
+              (h) => `
+                <div onclick="setPlanningHall(${h.id})" class="hall-pill ${
+                gameState.planningHallIndex === h.id ? "hall-pill-active" : ""
+              }">${h.name}</div>
+            `
+            )
+            .join("");
 
-        function formatMoney(amount) { return Math.floor(amount).toLocaleString('sv-SE') + " kr"; }
+        document.getElementById("planning-day-selector").innerHTML =
+          DAY_NAMES.map((name, i) => {
+            const complete = gameState.schedules[gameState.planningHallIndex][
+              i
+            ].every((s) => s !== null);
+            return `<button onclick="setPlanningDay(${i})" class="flex-shrink-0 px-4 py-2 text-[8px] font-black rounded-xl border ${
+              gameState.planningDayIndex === i
+                ? "day-btn-active bg-sky-500 text-white shadow-lg"
+                : complete
+                ? "bg-green-900/30 border-green-700 text-green-400"
+                : "bg-slate-800 border-slate-700 text-slate-500"
+            }">${name.substring(0, 3)}</button>`;
+          }).join("");
 
-        function safeSetText(id, text) {
-            const el = document.getElementById(id);
-            if (el) el.innerText = text;
-        }
-
-        function notify(msg, type = 'info') {
-            const container = document.getElementById('notifications');
-            if(!container) return;
-            const div = document.createElement('div');
-            div.className = `${type === 'success' ? 'bg-green-600' : (type === 'error' ? 'bg-red-600' : 'bg-slate-700')} text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold border border-white/10 mb-2 transition-all duration-300 transform opacity-100`;
-            div.innerText = msg;
-            container.appendChild(div);
-            setTimeout(() => div.remove(), 5000);
-        }
-
-        // --- UI CORE ---
-        function updateUI() {
-            const planDayInfo = WEEK_LOGIC[gameState.planningDayIndex];
-            
-            // Manager Name
-            safeSetText('display-manager-name', `Chef: ${gameState.managerName}`);
-            
-            // Header Stats
-            safeSetText('stat-money', formatMoney(gameState.money));
-            safeSetText('stat-day', `${DAY_NAMES[gameState.dayIndex]} (V.${gameState.weekCount})`);
-            safeSetText('stat-rep', `⭐ ${Math.round(gameState.reputation * 100)}%`);
-            safeSetText('stat-stock', `${gameState.stock} st`);
-            
-            safeSetText('ui-stock-display', `${gameState.stock} st`);
-            safeSetText('ui-pending-display', `${gameState.pendingStock} st`);
-            safeSetText('ui-debt-display', formatMoney(gameState.debt));
-            safeSetText('planning-week-num', gameState.weekCount);
-
-            // Stock Logic
-            const buyStockBtn = document.getElementById('btn-buy-stock');
-            if (buyStockBtn) {
-                if (gameState.dayIndex === 0) {
-                    buyStockBtn.disabled = false;
-                    buyStockBtn.className = "w-full py-2.5 rounded-xl font-bold text-[10px] uppercase bg-amber-600 hover:bg-amber-500 text-white shadow-lg";
-                } else {
-                    buyStockBtn.disabled = true;
-                    buyStockBtn.className = "w-full py-2.5 rounded-xl font-bold text-[10px] uppercase bg-slate-800 text-slate-600 cursor-not-allowed";
-                }
-            }
-
-            // Prices
-            safeSetText('price-standard-val', gameState.ticketPrice + " kr");
-            safeSetText('price-snack-val', gameState.snackPrice + " kr");
-            safeSetText('price-budget-display', Math.floor(gameState.ticketPrice * 0.8) + " kr");
-            safeSetText('price-standard-display', gameState.ticketPrice + " kr");
-            safeSetText('price-vip-display', Math.floor(gameState.ticketPrice * 1.5) + " kr");
-
-            const mainBtn = document.getElementById('btn-main-control');
-            if (mainBtn) {
-                mainBtn.disabled = false;
-                if (gameState.isSimulating) {
-                    mainBtn.innerText = "Simulation...";
-                    mainBtn.className = "px-8 py-2.5 rounded-full font-bold bg-slate-800 text-slate-500 cursor-not-allowed";
-                    mainBtn.disabled = true;
-                } else if (gameState.reportOpen) {
-                    mainBtn.innerText = "Nästa Dag";
-                    mainBtn.className = "px-8 py-2.5 rounded-full font-bold bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20";
-                    mainBtn.onclick = closeReport;
-                } else if (!gameState.weekPlanned) {
-                    mainBtn.innerText = "Planera Veckan";
-                    mainBtn.className = "px-8 py-2.5 rounded-full font-bold bg-slate-800 text-slate-500 cursor-not-allowed";
-                    mainBtn.disabled = true;
-                    mainBtn.onclick = null;
-                } else {
-                    mainBtn.innerText = "Starta Dagen";
-                    mainBtn.className = "px-8 py-2.5 rounded-full font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-lg";
-                    mainBtn.disabled = false;
-                    mainBtn.onclick = runFullDay;
-                }
-            }
-
-            // Day Selector
-            const daySelector = document.getElementById('planning-day-selector');
-            if (daySelector) {
-                daySelector.innerHTML = DAY_NAMES.map((name, i) => {
-                    const complete = gameState.schedule[i].every(s => s !== null);
-                    return `<button onclick="setPlanningDay(${i})" class="flex-shrink-0 px-4 py-2 text-[10px] font-bold rounded-xl border transition-all ${gameState.planningDayIndex === i ? 'day-btn-active bg-sky-500 text-white shadow-lg' : (complete ? 'bg-green-900/30 border-green-700 text-green-400' : 'bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-500')}">${name.substring(0, 3)}</button>`;
-                }).join('');
-            }
-
-            // Daily Slots
-            const slotsUI = document.getElementById('daily-schedule-ui');
-            if (slotsUI) {
-                slotsUI.innerHTML = planDayInfo.slots.map((s, i) => {
-                    const mId = gameState.schedule[gameState.planningDayIndex][i];
-                    const m = gameState.inventory.find(x => x.id === mId);
-                    return `<div class="flex justify-between items-center bg-slate-900/40 p-3 rounded-xl border border-slate-800 mb-2">
-                        <div class="flex flex-col">
-                            <span class="text-slate-500 uppercase text-[8px] font-bold tracking-widest">${s}</span>
-                            <span class="text-xs ${m ? 'text-sky-400 font-bold' : 'text-slate-600 italic'}">${m ? m.title : 'Boka film...'}</span>
-                        </div>
-                        ${m && !gameState.weekPlanned ? `<button onclick="removeFromSlot(${i})" class="text-red-500 font-black px-2 hover:bg-red-500/10 rounded-lg">✕</button>` : ''}
-                    </div>`;
-                }).join('');
-            }
-
-            // Movie Library
-            const libraryList = document.getElementById('owned-movie-list');
-            if (libraryList) {
-                libraryList.innerHTML = gameState.inventory.map(m => `
-                    <div class="p-4 bg-slate-800/80 rounded-2xl border border-slate-700 flex justify-between items-center hover:border-sky-500 transition-colors">
-                        <div><p class="font-bold text-sm text-slate-200">${m.title}</p><p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">${m.genre} | Pop: ${Math.round(m.popularity*100)}%</p></div>
-                        ${!gameState.weekPlanned ? `<button onclick="assignToSlot('${m.id}')" class="bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-bold px-4 py-2 rounded-xl transition-all">Boka</button>` : ''}
-                    </div>
-                `).join('');
-            }
-
-            // Shop
-            const shopUI = document.getElementById('shop-movie-list');
-            if (shopUI) {
-                shopUI.innerHTML = gameState.availableMovies.map(m => `
-                    <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700 border-dashed flex justify-between items-center">
-                        <div><p class="font-bold text-sm text-slate-300">${m.title}</p><p class="text-[9px] text-green-400 font-bold uppercase tracking-widest">${formatMoney(m.cost)}</p></div>
-                        <button onclick="buyMovie('${m.id}')" class="bg-green-700 hover:bg-green-600 text-white text-[10px] font-bold px-4 py-2 rounded-xl">Köp</button>
-                    </div>
-                `).join('');
-            }
-
-            // Staff
-            const staffUI = document.getElementById('staff-list');
-            if (staffUI) {
-                staffUI.innerHTML = gameState.staff.map(s => `
-                    <div class="p-4 bg-slate-800 rounded-2xl border border-slate-700 flex justify-between items-center text-xs">
-                        <div><p class="font-bold text-slate-200">${s.name} (v.${s.level})</p><p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">Lön: ${formatMoney(s.wage * s.level)}/dag</p></div>
-                        <button onclick="hireStaff('${s.id}')" class="bg-sky-700 text-white text-[10px] font-bold px-4 py-2 rounded-xl ${s.level >= s.maxLevel ? 'hidden' : ''}">Anställ</button>
-                    </div>
-                `).join('');
-            }
-
-            const allPlanned = gameState.schedule.every(day => day.every(slot => slot !== null));
-            const confirmBtn = document.getElementById('btn-confirm-week');
-            if (confirmBtn) confirmBtn.classList.toggle('hidden', gameState.weekPlanned || !allPlanned);
-        }
-
-        // --- ACTIONS ---
-        function switchTab(id) {
-            ['tab-planning', 'tab-shop', 'tab-business', 'tab-settings'].forEach(t => { 
-                const el = document.getElementById(t);
-                if(el) el.classList.add('hidden'); 
-                const btn = document.getElementById('btn-' + t);
-                if(btn) btn.classList.replace('tab-active', 'text-slate-400');
-            });
-            const activeEl = document.getElementById(id);
-            if(activeEl) activeEl.classList.remove('hidden'); 
-            const activeBtn = document.getElementById('btn-' + id);
-            if(activeBtn) activeBtn.classList.replace('text-slate-400', 'tab-active');
-        }
-
-        function setPlanningDay(idx) { gameState.planningDayIndex = idx; updateUI(); }
-        
-        function assignToSlot(mId) {
-            if(gameState.weekPlanned) return;
-            const daySchedule = gameState.schedule[gameState.planningDayIndex];
-            const emptyIdx = daySchedule.findIndex(s => s === null);
-            if(emptyIdx !== -1) {
-                daySchedule[emptyIdx] = mId;
-                if (daySchedule.every(s => s !== null) && gameState.planningDayIndex < 6) {
-                    gameState.planningDayIndex++;
-                }
-                updateUI();
-            } else notify("Dagen är fullbokad!", "error");
-        }
-
-        function removeFromSlot(slotIdx) {
-            gameState.schedule[gameState.planningDayIndex][slotIdx] = null;
-            updateUI();
-        }
-
-        function buyMovie(id) {
-            const idx = gameState.availableMovies.findIndex(m => m.id === id);
-            const m = gameState.availableMovies[idx];
-            if(gameState.money >= m.cost) {
-                gameState.money -= m.cost;
-                gameState.inventory.push({...m, owned: true});
-                gameState.availableMovies.splice(idx, 1);
-                updateUI();
-                notify(`${m.title} köpt!`, "success");
-            }
-        }
-
-        function confirmWeek() {
-            gameState.weekPlanned = true;
-            updateUI();
-            notify("Veckoschemat är låst!", "success");
-        }
-
-        function buyStock() {
-            if (gameState.dayIndex !== 0) { notify("Beställningar görs på måndagar!", "error"); return; }
-            if(gameState.money >= 1000) {
-                gameState.money -= 1000;
-                gameState.pendingStock += 200;
-                updateUI();
-                notify("Beställning lagd! Anländer onsdag.", "success");
-            } else notify("Inte tillräckligt med kassa!", "error");
-        }
-
-        function takeLoan() { gameState.money += 5000; gameState.debt += 5000; updateUI(); }
-        function hireStaff(id) { const s = gameState.staff.find(x => x.id === id); if (s.level < s.maxLevel) { s.level++; updateUI(); } }
-
-        // --- SIMULATION ---
-        async function runFullDay() {
-            if(gameState.isSimulating) return;
-            gameState.isSimulating = true;
-            gameState.dailyStats = [];
-            const dayInfo = WEEK_LOGIC[gameState.dayIndex];
-            const schedule = gameState.schedule[gameState.dayIndex];
-
-            const simInd = document.getElementById('sim-indicator');
-            if(simInd) simInd.classList.remove('hidden');
-            const report = document.getElementById('daily-report');
-            if(report) report.classList.add('hidden');
-            updateUI();
-
-            for(let i = 0; i < dayInfo.slots.length; i++) {
-                const movie = gameState.inventory.find(m => m.id === schedule[i]);
-                if (!movie) continue;
-
-                safeSetText('sim-status-text', `Visar nu: ${movie.title} (${dayInfo.slots[i]})`);
-                safeSetText('movie-now-playing', `Spelar nu: ${movie.title}`);
-                
-                const basePop = movie.popularity * gameState.reputation;
-                const visitors = Math.min(100, Math.floor(100 * basePop + (Math.random()*20)));
-
-                await simulateSlot(visitors);
-                
-                const snackDemand = Math.max(0.1, 1.5 - (gameState.snackPrice / 100));
-                const potentialBuyers = Math.floor(visitors * snackDemand);
-                const snacksPurchased = Math.min(potentialBuyers, gameState.stock);
-                const outOfSnacks = snacksPurchased < potentialBuyers && gameState.stock === 0;
-                
-                if (outOfSnacks) {
-                    gameState.reputation = Math.max(0.05, gameState.reputation - 0.08);
-                    notify("POPCORN SLUT! Arga gäster lämnar lokalen!", "error");
-                }
-
-                gameState.stock -= snacksPurchased;
-                let sInc = snacksPurchased * gameState.snackPrice;
-                let tInc = 0;
-                for(let v=0; v<visitors; v++) tInc += getPriceForSeat(Math.floor(Math.random()*100));
-
-                gameState.dailyStats.push({ 
-                    name: dayInfo.slots[i], 
-                    visitors, 
-                    income: sInc + tInc, 
-                    snackIncome: sInc, // Lagrat separat för rapporten
-                    ticketIncome: tInc, // Lagrat separat för rapporten
-                    movie: movie.title,
-                    outOfSnacks,
-                    pop: movie.popularity
-                });
-                gameState.money += (sInc + tInc);
-                
-                movie.popularity = Math.max(0.2, movie.popularity - 0.05);
-                gameState.reputation = Math.min(1, Math.max(0.1, gameState.reputation + (movie.quality - 0.5) * 0.015));
-
-                if(i < dayInfo.slots.length - 1) {
-                    await new Promise(r => setTimeout(r, 600));
-                    resetSeatsUI();
-                }
-            }
-
-            gameState.isSimulating = false;
-            gameState.reportOpen = true;
-            if(simInd) simInd.classList.add('hidden');
-            showDailyReport();
-            updateUI();
-        }
-
-        async function simulateSlot(count) {
-            resetSeatsUI();
-            const indices = Array.from({length: 100}, (_, i) => i).sort(() => Math.random() - 0.5);
-            const frames = 15;
-            for(let i=0; i < frames; i++) {
-                const target = Math.floor((count / frames) * (i+1));
-                const curStr = document.getElementById('visitor-count')?.innerText || "0 / 100";
-                const cur = parseInt(curStr.split(' / ')[0]) || 0;
-                for(let n=0; n < (target - cur); n++) {
-                    const idx = indices[cur + n];
-                    const s = document.getElementById(`seat-${idx}`);
-                    if(s) {
-                        s.classList.add('seat-filled');
-                        if(Math.random() > 0.8) spawnMoneyPop(idx, getPriceForSeat(idx));
+        const planDayInfo = WEEK_LOGIC[gameState.planningDayIndex];
+        document.getElementById("daily-schedule-ui").innerHTML =
+          planDayInfo.slots
+            .map((s, i) => {
+              const mId =
+                gameState.schedules[gameState.planningHallIndex][
+                  gameState.planningDayIndex
+                ][i];
+              const m = gameState.inventory.find((x) => x.id === mId);
+              return `
+                <div class="flex justify-between items-center bg-slate-800/30 p-3 rounded-xl border ${
+                  m ? "border-sky-500/40" : "border-slate-800"
+                } mb-1 text-[10px]">
+                    <div class="text-left"><span class="text-[7px] font-black opacity-50 uppercase text-left">${
+                      planDayInfo.times[i]
+                    } ${s}</span><p class="${
+                m ? "text-white font-bold" : "text-slate-600 italic"
+              } uppercase text-left">${m ? m.title : "Vakant"}</p></div>
+                    ${
+                      m && !gameState.weekPlanned
+                        ? `<button onclick="removeFromSlot(${i})" class="text-red-500 font-black px-2 hover:bg-red-500/10 rounded-lg">✕</button>`
+                        : ""
                     }
-                }
-                safeSetText('visitor-count', `${target} / 100`);
-                const pr = document.getElementById('sim-progress');
-                if(pr) pr.style.width = `${((i+1)/frames)*100}%`;
-                await new Promise(r => setTimeout(r, 50));
-            }
-            await new Promise(r => setTimeout(r, 500));
+                </div>`;
+            })
+            .join("");
+
+        document.getElementById("owned-movie-list").innerHTML =
+          gameState.inventory
+            .map(
+              (m) => `
+                <div class="p-2 bg-slate-800 rounded-xl border border-slate-700 flex gap-3 items-center hover:border-sky-500/50 transition-colors text-left shadow-lg">
+                    <img src="${
+                      m.poster
+                    }" class="w-8 h-12 rounded shadow-lg object-cover">
+                    <div class="flex-1"><p class="font-black text-[10px] uppercase leading-tight text-left text-left">${
+                      m.title
+                    }</p></div>
+                    ${
+                      !gameState.weekPlanned
+                        ? `<button onclick="assignToSlot('${m.id}')" class="bg-sky-600 text-white text-[8px] font-black px-3 py-2 rounded-lg">BOKA</button>`
+                        : ""
+                    }
+                </div>
+            `
+            )
+            .join("");
+
+        document.getElementById("staff-list").innerHTML = gameState.staff
+          .map(
+            (s) => `
+                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700 text-left mb-2 shadow-inner">
+                    <div class="flex justify-between items-start mb-1 text-left text-left"><p class="font-black text-[10px] uppercase text-slate-200 text-left">${
+                      s.name
+                    } (v.${s.level})</p><button onclick="hireStaff('${
+              s.id
+            }')" class="bg-sky-700 text-white text-[8px] font-black px-3 py-1 rounded-lg ${
+              s.level >= s.maxLevel ? "hidden" : ""
+            }">UPPGRADERA</button></div>
+                    <p class="text-[8px] text-slate-500 leading-tight text-left">${
+                      s.desc
+                    }</p>
+                </div>
+            `
+          )
+          .join("");
+
+        document.getElementById("expansion-list").innerHTML =
+          gameState.hallExpansions
+            .map(
+              (e) => `
+                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700 flex justify-between items-center mb-1 ${
+                  e.bought ? "opacity-30" : ""
+                }">
+                    <p class="font-black text-[10px] uppercase text-left">${
+                      e.name
+                    }</p>
+                    <button onclick="buyHall(${
+                      e.id
+                    })" class="bg-green-700 text-white text-[8px] font-black px-4 py-2 rounded-lg ${
+                e.bought || gameState.money < e.cost ? "hidden" : ""
+              }">BYGG (${formatMoney(e.cost)})</button>
+                    ${
+                      e.bought
+                        ? '<span class="text-green-500 text-[8px] font-black uppercase italic tracking-widest text-right">Aktiv</span>'
+                        : ""
+                    }
+                </div>
+            `
+            )
+            .join("");
+
+        document.getElementById("shop-movie-list").innerHTML =
+          gameState.availableMovies
+            .map(
+              (m) => `
+                <div class="p-2 bg-slate-800/40 rounded-xl border border-slate-700 border-dashed flex gap-3 items-center text-left mb-2">
+                    <img src="${
+                      m.poster
+                    }" class="w-8 h-12 rounded object-cover grayscale opacity-50">
+                    <div class="flex-1"><p class="font-black text-[10px] text-slate-300 uppercase leading-tight text-left text-left">${
+                      m.title
+                    }</p><p class="text-[8px] text-green-500 font-black mt-1 text-left">${formatMoney(
+                m.cost
+              )}</p></div>
+                    <button onclick="buyMovie('${
+                      m.id
+                    }')" class="bg-green-700 hover:bg-green-600 text-white text-[8px] font-black px-3 py-2 rounded-xl ${
+                gameState.money < m.cost ? "opacity-30" : ""
+              }">KÖP</button>
+                </div>
+            `
+            )
+            .join("");
+
+        // Uppdatera realtids-priser i Settings
+        safeSetText("price-standard-val", gameState.ticketPrice + " kr");
+        safeSetText("price-snack-val", gameState.snackPrice + " kr");
+        safeSetText(
+          "price-budget-display",
+          Math.floor(gameState.ticketPrice * 0.8) + " kr"
+        );
+        safeSetText("price-standard-display", gameState.ticketPrice + " kr");
+        safeSetText(
+          "price-vip-display",
+          Math.floor(gameState.ticketPrice * 1.5) + " kr"
+        );
+
+        const mainBtn = document.getElementById("btn-main-control");
+        const allPlanned = gameState.halls.every((h) =>
+          gameState.schedules[h.id].every((d) => d.every((s) => s !== null))
+        );
+
+        if (gameState.isSimulating) {
+          mainBtn.innerText = "VISNING PÅGÅR...";
+          mainBtn.disabled = true;
+        } else if (gameState.reportOpen) {
+          mainBtn.innerText = "NÄSTA DAG";
+          mainBtn.onclick = closeReport;
+          mainBtn.disabled = false;
+          mainBtn.className =
+            "px-8 py-2.5 rounded-full font-black bg-green-600 hover:bg-green-500 text-white shadow-lg uppercase";
+        } else if (!gameState.weekPlanned) {
+          mainBtn.innerText = "PLANERA VECKAN";
+          mainBtn.className =
+            "px-8 py-2.5 rounded-full font-black bg-slate-800 text-slate-500 cursor-not-allowed uppercase";
+          mainBtn.disabled = true;
+        } else {
+          mainBtn.innerText = "STARTA DAGEN";
+          mainBtn.onclick = runFullDay;
+          mainBtn.disabled = false;
+          mainBtn.className =
+            "px-8 py-2.5 rounded-full font-black bg-sky-600 hover:bg-sky-500 text-white shadow-lg uppercase";
         }
 
-        function generateFeedback() {
-            const feedbacks = [];
-            const ranOut = gameState.dailyStats.some(s => s.outOfSnacks);
-            const priceH = gameState.snackPrice > 130;
-            
-            if (ranOut) {
-                const angry = ["SKANDAL! Inga popcorn?!", "Onsdagsleveransen kom för sent för mig!", "Värsta bion någonsin utan snacks!", "Besviken på logistiken här."];
-                feedbacks.push({ text: angry[Math.floor(Math.random()*angry.length)], type: 'negative' });
-            } else if (priceH) {
-                feedbacks.push({ text: `${gameState.snackPrice} kr för popcorn?! Är det guld i dem?`, type: 'negative' });
-            } else {
-                feedbacks.push({ text: "Perfekt mängd popcorn, tack!", type: 'positive' });
+        document
+          .getElementById("btn-confirm-week")
+          .classList.toggle("hidden", gameState.weekPlanned || !allPlanned);
+        safeSetText("planning-week-num", gameState.weekCount);
+      }
+
+      // --- ACTIONS ---
+      function setViewHall(id) {
+        gameState.currentViewHall = id;
+        resetSeatsUI();
+        updateUI();
+      }
+      function setPlanningHall(id) {
+        gameState.planningHallIndex = id;
+        updateUI();
+      }
+      function setPlanningDay(idx) {
+        gameState.planningDayIndex = idx;
+        updateUI();
+      }
+
+      function buyHall(id) {
+        const exp = gameState.hallExpansions.find((e) => e.id === id);
+        if (gameState.money >= exp.cost) {
+          gameState.money -= exp.cost;
+          exp.bought = true;
+          gameState.halls.push({
+            id: id,
+            name: exp.name,
+            capacity: 100,
+            active: true,
+          });
+          notify(`${exp.name} färdigställd!`, "success");
+          updateUI();
+        }
+      }
+
+      // --- AUTOMATISK DAG-VÄXLARE LOGIK ---
+      function assignToSlot(mId) {
+        if (gameState.weekPlanned) return;
+        const daySchedule =
+          gameState.schedules[gameState.planningHallIndex][
+            gameState.planningDayIndex
+          ];
+        const emptyIdx = daySchedule.findIndex((s) => s === null);
+
+        if (emptyIdx !== -1) {
+          // Lägg till filmen i första lediga slot
+          daySchedule[emptyIdx] = mId;
+
+          // Kontrollera om dagen nu blev full efter detta val
+          const isDayNowFull = daySchedule.every((slot) => slot !== null);
+
+          if (isDayNowFull && gameState.planningDayIndex < 6) {
+            // Om dagen är full och det inte är söndag (index 6), hoppa till nästa dag
+            gameState.planningDayIndex++;
+          }
+
+          updateUI();
+        } else {
+          notify("Dagen är redan fullbokad!", "error");
+        }
+      }
+
+      function removeFromSlot(idx) {
+        gameState.schedules[gameState.planningHallIndex][
+          gameState.planningDayIndex
+        ][idx] = null;
+        updateUI();
+      }
+      function confirmWeek() {
+        gameState.weekPlanned = true;
+        updateUI();
+        notify("VECKOPLAN LÅST!", "success");
+      }
+      function buyStock() {
+        if (gameState.dayIndex !== 0)
+          return notify(
+            "Beställningsfönster stängt! Endast måndagar.",
+            "error"
+          );
+        if (gameState.money >= 2000) {
+          gameState.money -= 2000;
+          gameState.pendingStock += 400;
+          updateUI();
+          notify("Beställning lagd.");
+        }
+      }
+      function hireStaff(id) {
+        const s = gameState.staff.find((x) => x.id === id);
+        const cost = s.wage * (s.level + 1);
+        if (gameState.money >= cost && s.level < s.maxLevel) {
+          gameState.money -= cost;
+          s.level++;
+          updateUI();
+          notify(`${s.name} uppgraderad!`, "success");
+        }
+      }
+      function buyMovie(id) {
+        const idx = gameState.availableMovies.findIndex((m) => m.id === id);
+        const m = gameState.availableMovies[idx];
+        if (gameState.money >= m.cost) {
+          gameState.money -= m.cost;
+          gameState.inventory.push({ ...m, owned: true });
+          gameState.availableMovies.splice(idx, 1);
+          updateUI();
+          notify("Licens köpt!");
+        }
+      }
+
+      // --- SIMULATION ---
+      async function runFullDay() {
+        if (gameState.isSimulating) return;
+        gameState.isSimulating = true;
+        gameState.dailyStats = [];
+        const dayInfo = WEEK_LOGIC[gameState.dayIndex];
+
+        document.getElementById("sim-indicator").classList.remove("hidden");
+        document.getElementById("daily-report").classList.add("hidden");
+        updateUI();
+
+        for (let slotIdx = 0; slotIdx < dayInfo.slots.length; slotIdx++) {
+          let slotResults = [];
+          gameState.halls.forEach((hall) => {
+            const mId =
+              gameState.schedules[hall.id][gameState.dayIndex][slotIdx];
+            const movie = gameState.inventory.find((m) => m.id === mId);
+            if (movie) slotResults.push({ hall, movie });
+          });
+
+          if (slotResults.length === 0) continue;
+
+          const currentShow = slotResults.find(
+            (r) => r.hall.id === gameState.currentViewHall
+          );
+
+          if (currentShow) {
+            const count = Math.min(
+              100,
+              Math.floor(
+                100 * currentShow.movie.popularity * gameState.reputation +
+                  Math.random() * 15
+              )
+            );
+            safeSetText(
+              "movie-now-playing",
+              `Visar nu: ${currentShow.movie.title}`
+            );
+            await simulateGridSlot(count);
+          } else {
+            await new Promise((r) => setTimeout(r, 1000));
+          }
+
+          slotResults.forEach((res) => {
+            const visitors = Math.min(
+              100,
+              Math.floor(
+                100 * res.movie.popularity * gameState.reputation +
+                  Math.random() * 15
+              )
+            );
+            const snackDemand = Math.max(0.1, 1.7 - gameState.snackPrice / 100);
+            const potentialBuyers = Math.floor(visitors * snackDemand);
+            const snacksPurchased = Math.min(potentialBuyers, gameState.stock);
+
+            if (snacksPurchased < potentialBuyers && gameState.stock === 0) {
+              gameState.reputation = Math.max(
+                0.05,
+                gameState.reputation - 0.05
+              );
+            }
+            gameState.stock -= snacksPurchased;
+
+            let sInc = snacksPurchased * gameState.snackPrice;
+            let tInc = 0;
+            const zoneCounts = { budget: 0, standard: 0, vip: 0 };
+            for (let v = 0; v < visitors; v++) {
+              const seatIdx = Math.floor(Math.random() * 100);
+              zoneCounts[getZone(seatIdx)]++;
+              tInc += getPriceForSeat(seatIdx);
             }
 
-            if (gameState.ticketPrice > 320) feedbacks.push({ text: "Oerhört dyra biljetter.", type: 'negative' });
-            if (gameState.theaterCondition < 0.6) feedbacks.push({ text: "Smutsigt i salongen!", type: 'negative' });
-
-            return feedbacks.sort(() => 0.5 - Math.random()).slice(0, 2);
+            gameState.dailyStats.push({
+              hallName: res.hall.name,
+              name: dayInfo.slots[slotIdx],
+              visitors,
+              sInc,
+              tInc,
+              movie: res.movie.title,
+              zoneCounts: { ...zoneCounts },
+              outOfSnacks: snacksPurchased < potentialBuyers,
+            });
+            gameState.money += sInc + tInc;
+            res.movie.popularity = Math.max(0.1, res.movie.popularity - 0.07);
+          });
         }
 
-        function showDailyReport() {
-            const rep = document.getElementById('daily-report');
-            if(rep) rep.classList.remove('hidden');
-            safeSetText('report-day-name', DAY_NAMES[gameState.dayIndex]);
-            
-            const fl = document.getElementById('rep-feedback-list');
-            if (fl) {
-                const q = generateFeedback();
-                fl.innerHTML = q.map(quote => `
-                    <div class="flex items-start space-x-3 bg-slate-800/60 p-3 rounded-2xl border ${quote.type === 'negative' ? 'border-red-900/50' : 'border-slate-700/50'}">
-                        <span class="text-2xl">${quote.type === 'positive' ? '😊' : (quote.type === 'negative' ? '😡' : '😐')}</span>
-                        <p class="text-sm italic text-slate-200">"${quote.text}"</p>
-                    </div>
-                `).join('');
+        gameState.isSimulating = false;
+        gameState.reportOpen = true;
+        document.getElementById("sim-indicator").classList.add("hidden");
+        showDailyReport();
+        updateUI();
+      }
+
+      async function simulateGridSlot(count) {
+        resetSeatsUI();
+        const indices = Array.from({ length: 100 }, (_, i) => i).sort(
+          () => Math.random() - 0.5
+        );
+        const frames = 15;
+        for (let i = 0; i < frames; i++) {
+          const target = Math.floor((count / frames) * (i + 1));
+          const current =
+            parseInt(
+              document
+                .getElementById("visitor-count")
+                ?.innerText.split(" / ")[0]
+            ) || 0;
+          for (let n = 0; n < target - current; n++) {
+            const idx = indices[current + n];
+            const s = document.getElementById(`seat-${idx}`);
+            if (s) {
+              s.classList.add("seat-filled");
+              if (Math.random() > 0.8) spawnMoneyPop(idx, getPriceForSeat(idx));
             }
+          }
+          safeSetText("visitor-count", `${target} / 100`);
+          document.getElementById("sim-progress").style.width =
+            ((i + 1) / frames) * 100 + "%";
+          await new Promise((r) => setTimeout(r, 60));
+        }
+      }
 
-            const br = document.getElementById('slot-breakdown');
-            if(br) {
-                br.innerHTML = gameState.dailyStats.map(d => `
-                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                        <div>
-                            <p class="font-black text-sky-400 uppercase text-[8px] tracking-widest">${d.name}</p>
-                            <p class="font-bold text-white text-xs">${d.movie}</p>
-                        </div>
-                        <div class="text-right font-bold"><p class="text-white text-sm">${d.visitors} pers</p><p class="text-green-400 text-[10px]">+${formatMoney(d.income)}</p></div>
-                    </div>
-                `).join('');
-            }
+      function showDailyReport() {
+        const rep = document.getElementById("daily-report");
+        rep.classList.remove("hidden");
+        safeSetText("report-day-name", DAY_NAMES[gameState.dayIndex]);
 
-            const totalTicketInc = gameState.dailyStats.reduce((a, c) => a + c.ticketIncome, 0);
-            const totalSnackInc = gameState.dailyStats.reduce((a, c) => a + c.snackIncome, 0);
-            
-            const exp = 400 + Math.floor(gameState.debt * 0.02) + (gameState.staff.find(s => s.id === 's1').level * 100);
-            const net = (totalTicketInc + totalSnackInc) - exp;
+        const totalT = gameState.dailyStats.reduce((a, c) => a + c.tInc, 0);
+        const totalS = gameState.dailyStats.reduce((a, c) => a + c.sInc, 0);
+        const staffCosts = gameState.staff.reduce(
+          (a, s) => a + s.wage * s.level,
+          0
+        );
+        const exp = 500 + staffCosts + gameState.halls.length * 250;
+        const net = totalT + totalS - exp;
 
-            safeSetText('rep-ticket-income', formatMoney(totalTicketInc));
-            safeSetText('rep-snack-income', formatMoney(totalSnackInc));
-            safeSetText('rep-costs', "-" + formatMoney(exp));
-            safeSetText('rep-total', (net >= 0 ? "+" : "") + formatMoney(net));
-            const te = document.getElementById('rep-total');
-            if(te) te.className = net >= 0 ? "font-black text-green-400 text-3xl italic" : "font-black text-red-400 text-3xl italic";
-            
-            gameState.money -= exp;
+        safeSetText("rep-ticket-income", formatMoney(totalT));
+        safeSetText("rep-snack-income", formatMoney(totalS));
+        safeSetText("rep-costs", "-" + formatMoney(exp));
+        safeSetText("rep-total", formatMoney(net));
+        document.getElementById("rep-total").className =
+          net >= 0
+            ? "font-black text-green-400 text-3xl italic"
+            : "font-black text-red-400 text-3xl italic text-left";
+
+        const supervisorData = getSupervisorAnalysis(net, gameState.dailyStats);
+        safeSetText("supervisor-mood-label", supervisorData.status);
+        safeSetText("shift-leader-text", `"${supervisorData.notes}"`);
+
+        const feedbackList = generateGuestFeedback(gameState.dailyStats);
+        document.getElementById("guest-feedback-list").innerHTML = feedbackList
+          .map(
+            (f) => `
+                <div class="bg-slate-800/50 p-2 rounded-xl border ${
+                  f.type === "negative"
+                    ? "border-red-900/30"
+                    : "border-green-900/30"
+                } flex items-start gap-2 text-left">
+                    <span class="text-xs">${
+                      f.type === "negative" ? "😡" : "😊"
+                    }</span>
+                    <p class="text-[10px] italic text-slate-300 leading-tight text-left">"${
+                      f.text
+                    }"</p>
+                </div>
+            `
+          )
+          .join("");
+
+        const zones = { budget: 0, standard: 0, vip: 0 };
+        gameState.dailyStats.forEach((s) => {
+          zones.budget += s.zoneCounts.budget;
+          zones.standard += s.zoneCounts.standard;
+          zones.vip += s.zoneCounts.vip;
+        });
+        document.getElementById("zone-breakdown-ui").innerHTML = `
+                <div class="grid grid-cols-3 gap-2 text-[8px] uppercase font-black text-slate-500 tracking-tighter">
+                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5">Budget: ${zones.budget} st</div>
+                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5">Std: ${zones.standard} st</div>
+                    <div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-white/5">VIP: ${zones.vip} st</div>
+                </div>`;
+
+        const br = document.getElementById("slot-breakdown");
+        br.innerHTML = gameState.dailyStats
+          .map(
+            (d) => `
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-[10px] mb-1 text-left">
+                    <div><p class="font-black text-sky-400 uppercase text-[7px] tracking-widest text-left">${
+                      d.hallName
+                    } | ${
+              d.name
+            }</p><p class="font-bold text-white uppercase text-left">${
+              d.movie
+            }</p></div>
+                    <div class="text-right font-black"><p class="text-white text-right">${
+                      d.visitors
+                    } PERS</p><p class="text-green-400 text-right">+${formatMoney(
+              d.sInc + d.tInc
+            )}</p></div>
+                </div>
+            `
+          )
+          .join("");
+
+        gameState.money -= exp;
+      }
+
+      function closeReport() {
+        document.getElementById("daily-report").classList.add("hidden");
+        resetSeatsUI();
+        gameState.reportOpen = false;
+        gameState.dayIndex++;
+
+        // Logistik: Leverans på onsdag (Index 2)
+        if (gameState.dayIndex === 2 && gameState.pendingStock > 0) {
+          gameState.stock += gameState.pendingStock;
+          notify(
+            `LOGISTIK: ${gameState.pendingStock} enheter levererade!`,
+            "success"
+          );
+          gameState.pendingStock = 0;
         }
 
-        function closeReport() {
-            const report = document.getElementById('daily-report');
-            if(report) report.classList.add('hidden');
-            resetSeatsUI();
-            gameState.reportOpen = false;
-            
-            gameState.dayIndex++;
-            
-            // Delivery check
-            if (gameState.dayIndex === 2 && gameState.pendingStock > 0) {
-                gameState.stock += gameState.pendingStock;
-                notify(`LEVERANS! ${gameState.pendingStock}st popcorn har anlänt.`, "success");
-                gameState.pendingStock = 0;
-            }
-
-            if(gameState.dayIndex > 6) {
-                gameState.dayIndex = 0; 
-                gameState.weekCount++; 
-                gameState.weekPlanned = false;
-                gameState.schedule = gameState.schedule.map(d => new Array(d.length).fill(null));
-                notify("Ny vecka! Dags för planering.");
-            }
-            updateUI();
+        if (gameState.dayIndex > 6) {
+          gameState.dayIndex = 0;
+          gameState.weekCount++;
+          gameState.weekPlanned = false;
+          Object.keys(gameState.schedules).forEach((id) => {
+            gameState.schedules[id] = Array.from({ length: 7 }, (_, d) =>
+              new Array(WEEK_LOGIC[d].slots.length).fill(null)
+            );
+          });
+          notify("NY VECKA STARTAD.");
         }
+        updateUI();
+      }
 
-        function resetSeatsUI() {
-            const container = document.getElementById('seats-container');
-            if(!container) return;
-            container.innerHTML = '';
-            for(let i=0; i<100; i++) {
-                const s = document.createElement('div');
-                s.id = `seat-${i}`;
-                s.className = `seat seat-${getZone(i)}`;
-                container.appendChild(s);
-            }
-            safeSetText('visitor-count', `0 / 100`);
-            const prog = document.getElementById('sim-progress');
-            if(prog) prog.style.width = `0%`;
+      function resetSeatsUI() {
+        const container = document.getElementById("seats-container");
+        if (!container) return;
+        container.innerHTML = "";
+        for (let i = 0; i < 100; i++) {
+          const s = document.createElement("div");
+          s.id = `seat-${i}`;
+          s.className = `seat seat-${getZone(i)}`;
+          container.appendChild(s);
         }
+        safeSetText("visitor-count", `0 / 100`);
+        safeSetText("movie-now-playing", `Planering...`);
+      }
 
-        function spawnMoneyPop(idx, amount) {
-            const container = document.getElementById('seats-container');
-            if(!container) return;
-            const pop = document.createElement('div');
-            pop.className = 'money-pop text-[10px]';
-            pop.innerText = `+${amount}`;
-            const seat = document.getElementById(`seat-${idx}`);
-            if(seat) {
-                pop.style.left = seat.offsetLeft + 'px';
-                pop.style.top = seat.offsetTop + 'px';
-                container.appendChild(pop);
-                setTimeout(() => pop.remove(), 800);
-            }
+      function spawnMoneyPop(idx, amount) {
+        const container = document.getElementById("seats-container");
+        const pop = document.createElement("div");
+        pop.className = "money-pop text-[10px] italic font-black";
+        pop.innerText = `+${amount}`;
+        const seat = document.getElementById(`seat-${idx}`);
+        if (seat) {
+          pop.style.left = seat.offsetLeft + "px";
+          pop.style.top = seat.offsetTop + "px";
+          container.appendChild(pop);
+          setTimeout(() => pop.remove(), 800);
         }
+      }
 
-        // --- LISTENERS ---
-        document.getElementById('price-slider').oninput = function() { 
-            gameState.ticketPrice = parseInt(this.value); 
-            updateUI(); 
-        };
-        document.getElementById('price-snack-slider').oninput = function() { 
-            gameState.snackPrice = parseInt(this.value); 
-            updateUI(); 
-        };
+      function switchTab(id) {
+        ["tab-planning", "tab-shop", "tab-business", "tab-settings"].forEach(
+          (t) => {
+            document.getElementById(t).classList.add("hidden");
+            document
+              .getElementById("btn-" + t)
+              .classList.replace("tab-active", "text-slate-400");
+          }
+        );
+        document.getElementById(id).classList.remove("hidden");
+        document
+          .getElementById("btn-" + id)
+          .classList.replace("text-slate-400", "tab-active");
+      }
 
-        window.onload = () => { 
-            resetSeatsUI(); 
-        };
+      document.getElementById("price-slider").oninput = function () {
+        gameState.ticketPrice = parseInt(this.value);
+        updateUI();
+      };
+      document.getElementById("price-snack-slider").oninput = function () {
+        gameState.snackPrice = parseInt(this.value);
+        updateUI();
+      };
+
+      window.onload = () => {
+        fetchMovies();
+      };
     </script>
-</body>
+  </body>
 </html>
